@@ -9,4 +9,5 @@ package-lock.json
 .vscode
 *.swp
 .env*
+!*.example
 !*.sample

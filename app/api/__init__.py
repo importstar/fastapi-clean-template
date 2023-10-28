@@ -16,7 +16,7 @@ async def init_router(app, settings):
     current_directory = pathlib.Path(__file__).parent
     routers = await get_subrouters(current_directory)
 
-    logger.debug(f"routers {routers}")
+    logger.info(f"routers {[(lambda r: r.prefix)(r) for r in routers]}")
     for router in routers:
         # logger.debug(f"{router.tags}")
         app.include_router(router, prefix=f"{settings.API_PREFIX}", tags=router.tags)
@@ -57,8 +57,9 @@ async def get_subrouters(directory):
         elif module.is_dir():
             subrouters.extend(await get_subrouters(module))
 
+    logger.info(f"router {[(lambda r: r.prefix)(r) for r in subrouters]}")
     for router in subrouters:
-        logger.info(f"router {router} {router.prefix}")
+        # logger.debug(f"router {router.prefix}")
         if parent_router:
             parent_router.include_router(router)
         else:

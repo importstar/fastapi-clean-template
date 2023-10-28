@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
 import os
 
@@ -18,12 +18,6 @@ class Settings(BaseSettings):
     VERSION: str = "0.0.1"
 
     # database
-    DATABASE_NAME_MAPPER: dict = {
-        "prod": "fct",
-        "stage": "stage-fct",
-        "dev": "dev-fct",
-        "test": "test-fct",
-    }
     DB_ENGINE_MAPPER: dict = {
         "postgresql": "postgresql",
         "mysql": "mysql+pymysql",
@@ -39,18 +33,7 @@ class Settings(BaseSettings):
     DATABASE_URI_FORMAT: str = (
         "{db_engine}://{user}:{password}@{host}:{port}/{database}"
     )
-    DATABASE_URI: str = (
-        DATABASE_URI_FORMAT
-        if DB_USER and DB_PASSWORD
-        else "{db_engine}://{host}:{port}/{database}"
-    ).format(
-        db_engine=DB_ENGINE,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT,
-        database=DB_NAME,
-    )
+    DATABASE_URI: str = ""
 
     # auth
     SECRET_KEY: str = "secret_key"
@@ -73,20 +56,21 @@ class Settings(BaseSettings):
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     DATE_FORMAT: str = "%Y-%m-%d"
 
-    class Config:
-        case_sensitive = True
-        env_file = ".env" if "prod" in os.getenv("APP_ENV").lower() else ".env.dev"
+    model_config = SettingsConfigDict(
+        case_sensitive=True,
+        env_file=".env" if "prod" in os.getenv("APP_ENV").lower() else ".env.dev",
+    )
 
 
 class TestConfigs(Settings):
     APP_ENV: str = "test"
 
 
-configs = Settings()
+settings = Settings()
 
 if APP_ENV == "prod":
     pass
 elif APP_ENV == "stage":
     pass
 elif APP_ENV == "test":
-    setting = TestConfigs()
+    settings = TestConfigs()
