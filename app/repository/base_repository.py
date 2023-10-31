@@ -19,7 +19,7 @@ class BaseRepository:
 
         return items
 
-    def read_by_id(self, id: str | ObjectId) -> Document:
+    def get_by_id(self, id: str | ObjectId) -> Document:
         item = self.model.objects.with_id(id)
         if not item:
             raise NotFoundError(detail=f"ObjectId('{id}') not found")
@@ -35,10 +35,10 @@ class BaseRepository:
         except Exception as e:
             raise ValidationError(detail=str(e))
 
-        return self.read_by_id(item.id)
+        return self.get_by_id(item.id)
 
     def update(self, id: str | ObjectId, schema: BaseModel, **kwargs: int) -> Document:
-        item = self.read_by_id(id)
+        item = self.get_by_id(id)
         try:
             item.update(
                 **(schema.model_dump(exclude_defaults=True) if schema else kwargs),
@@ -47,28 +47,28 @@ class BaseRepository:
         except Exception as e:
             raise ValidationError(detail=str(e))
 
-        return self.read_by_id(id)
+        return self.get_by_id(id)
 
     def update_attr(self, id: str | ObjectId, attr: str, value: Any) -> Document:
-        item = self.read_by_id(id)
+        item = self.get_by_id(id)
         try:
             item.update(**{attr: value})
         except Exception as e:
             raise ValidationError(detail=str(e))
 
-        return self.read_by_id(id)
+        return self.get_by_id(id)
 
     def whole_update(self, id: str | ObjectId, schema: BaseModel) -> Document:
-        item = self.read_by_id(id)
+        item = self.get_by_id(id)
         try:
             item.update(**schema.model_dump(exclude_defaults=True))
         except Exception as e:
             raise ValidationError(detail=str(e))
 
-        return self.read_by_id(id)
+        return self.get_by_id(id)
 
     def delete_by_id(self, id: str | ObjectId) -> Document:
-        item = self.read_by_id(id)
+        item = self.get_by_id(id)
         try:
             item.delete()
         except Exception as e:
