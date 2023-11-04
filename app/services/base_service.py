@@ -6,7 +6,7 @@ from bson import ObjectId
 
 
 class BaseService:
-    def __init__(self, repository: BaseRepository) -> None:
+    def __init__(self, repository: BaseRepository):
         self._repository: BaseRepository = repository
 
     def get_list(self, schema: BaseModel | None = None, **kwargs: int) -> QuerySet:
