@@ -1,7 +1,7 @@
 from mongoengine import connect, disconnect_all
 from loguru import logger
 
-from app.models.houses import House
+from app.models.house_model import House
 
 
 async def init_mongoengine(settings):

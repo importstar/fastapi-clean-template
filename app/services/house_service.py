@@ -4,4 +4,5 @@ from app.services.base_service import BaseService
 
 class HouseService(BaseService):
     def __init__(self):
-        super().__init__(HouseRepository)
+        self.house_repository = HouseRepository()
+        super().__init__(self.house_repository)
