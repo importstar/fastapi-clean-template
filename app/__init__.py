@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from fastapi_pagination import add_pagination
+from fastapi_pagination.api import _add_pagination
 from app.api import init_router
 from app.core.app import get_app_settings, AppSettings
 from app.models import init_mongoengine, disconnect_mongoengine
@@ -17,7 +17,7 @@ class App:
             # on app start up
             await init_router(app, settings)
             await init_mongoengine(settings)
-            add_pagination(app)
+            _add_pagination(app)
             yield
             # on app shutdown
             # await disconnect_mongoengine()

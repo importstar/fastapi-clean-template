@@ -9,7 +9,7 @@ APP_ENV: str = ""
 class Settings(BaseSettings):
     # base
     APP_ENV: str = os.getenv("APP_ENV", "dev")
-    DEBUG: bool = True
+    DEBUG: bool = False
     DOCS_URL: str = "/docs"
     OPENAPI_PREFIX: str = ""
     OPENAPI_URL: str = "/openapi.json"
