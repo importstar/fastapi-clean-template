@@ -17,7 +17,7 @@ class BaseRepository:
         self.model = model
 
     def get_by_options(
-        self, schema: BaseModel | None = None, **kwargs: str
+        self, schema: BaseModel | None = None, **kwargs: Any
     ) -> QuerySet:
         items = self.model.objects(
             **{**(schema.model_dump(exclude_defaults=True) if schema else {}), **kwargs}
@@ -41,7 +41,7 @@ class BaseRepository:
 
         return item
 
-    def create(self, schema: None | BaseModel = None, **kwargs: int) -> Document:
+    def create(self, schema: None | BaseModel = None, **kwargs: Any) -> Document:
         item = self.model(
             **{
                 **(schema.model_dump(exclude_defaults=True) if schema else {}),
@@ -61,7 +61,7 @@ class BaseRepository:
         return self.get_by_id(item.id)
 
     def update(
-        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: int
+        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: Any
     ) -> Document:
         item = self.get_by_id(id)
         try:
@@ -86,7 +86,7 @@ class BaseRepository:
         return self.get_by_id(id)
 
     def whole_update(
-        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: int
+        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: Any
     ) -> Document:
         item = self.get_by_id(id)
         try:

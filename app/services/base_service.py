@@ -9,17 +9,17 @@ class BaseService:
     def __init__(self, repository: BaseRepository):
         self._repository: BaseRepository = repository
 
-    def get_list(self, schema: BaseModel | None = None, **kwargs: int) -> QuerySet:
+    def get_list(self, schema: BaseModel | None = None, **kwargs: Any) -> QuerySet:
         return self._repository.get_by_options(schema, **kwargs)
 
     def get_by_id(self, id: str | ObjectId) -> Document:
         return self._repository.get_by_id(id)
 
-    def add(self, schema: BaseModel | None = None, **kwargs: int) -> Document:
+    def create(self, schema: BaseModel | None = None, **kwargs: Any) -> Document:
         return self._repository.create(schema, **kwargs)
 
     def patch(
-        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: int
+        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: Any
     ) -> Document:
         return self._repository.update(id, schema, **kwargs)
 
@@ -27,7 +27,7 @@ class BaseService:
         return self._repository.update_attr(id, attr, value)
 
     def put_update(
-        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: int
+        self, id: str | ObjectId, schema: BaseModel | None = None, **kwargs: Any
     ) -> Document:
         return self._repository.whole_update(id, schema, **kwargs)
 
