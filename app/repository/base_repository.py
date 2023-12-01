@@ -7,8 +7,7 @@ from bson import ObjectId
 
 from typing import Any
 
-from mongoengine import Document, QuerySet
-from mongoengine.errors import NotUniqueError
+from mongoengine import Document, QuerySet, errors
 
 from app.core.exceptions import DuplicatedError, NotFoundError, ValidationError
 
@@ -29,19 +28,31 @@ class BaseRepository:
         return items
 
     def get_by_id(self, id: str | ObjectId) -> Document:
-        item = self.model.objects.with_id(id)
+        if not ObjectId.is_valid(id):
+            raise ValidationError("Invalid ObjectId")
+
+        try:
+            item = self.model.objects.with_id(id)
+        except errors.ValidationError as e:
+            raise ValidationError(detail=str(e))
+
         if not item:
             raise NotFoundError(detail=f"ObjectId('{str(id)}') not found")
 
         return item
 
-    def create(self, schema: None | BaseModel, **kwargs: int) -> Document:
-        item = self.model(**{**schema.model_dump(exclude_defaults=True), **kwargs})
+    def create(self, schema: None | BaseModel = None, **kwargs: int) -> Document:
+        item = self.model(
+            **{
+                **(schema.model_dump(exclude_defaults=True) if schema else {}),
+                **kwargs,
+            }
+        )
         try:
             item.save()
-        except NotUniqueError as e:
-            duplicate = re.search("'keyValue': \{.*?\}", str(e)).group(0)
-            duplicate = re.search("\{.*?\}", duplicate).group(0)
+        except errors.NotUniqueError as e:
+            duplicate = re.search("'keyValue': {.*?}", str(e)).group(0)
+            duplicate = re.search("{.*?}", duplicate).group(0)
             raise DuplicatedError(detail=f"'DuplicateError': {duplicate}")
 
         except Exception as e:
