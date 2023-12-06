@@ -16,40 +16,70 @@ def generate_client(
 ):
     print("OpenAPI Client Generator")
 
-    # openapi_json = "openapi.json"
-    # res = httpx.get(url)
-    # data = res.json()
+    openapi_json = "openapi.json"
+    res = httpx.get(url)
+    data = res.json()
+    data["openapi"] = "3.0.3"
     # data["components"]["securitySchemes"]["OAuth2PasswordBearer"]["flows"][
     #     "password"
     # ].pop("tokenUrl")
+    for component in data["components"]["schemas"]:
+        properties = data["components"]["schemas"][component]["properties"]
+        if "total" in properties:
+            properties["total"] = {"type": "integer", "minimum": 0.0}
 
-    # with open(openapi_json, "w") as f:
-    #     json.dump(data, f)
+        if "page" in properties:
+            properties["page"] = {"type": "integer", "minimum": 1.0}
+
+        if "size" in properties:
+            properties["size"] = {"type": "integer", "minimum": 1.0}
+
+        if "pages" in properties:
+            properties["pages"] = {"type": "integer", "minimum": 0.0}
+
+    data["components"]["schemas"]["Body_authentication_api_v1_auth_login_post"][
+        "properties"
+    ]["grant_type"] = {"type": "string", "pattern": "password"}
+
+    data["components"]["schemas"]["Body_authentication_api_v1_auth_login_post"][
+        "properties"
+    ]["client_id"] = {"type": "string"}
+
+    data["components"]["schemas"]["Body_authentication_api_v1_auth_login_post"][
+        "properties"
+    ]["client_secret"] = {"type": "string"}
+
+    with open(openapi_json, "w") as f:
+        json.dump(data, f)
 
     path = pathlib.Path("api-client")
     if not path.exists():
         print("Generate Clinet")
-        create_new_client(
-            # url=None,
-            # path=pathlib.Path(openapi_json),
-            url=url,
-            path=None,
-            meta=MetaType.POETRY,
-            config=Config.load_from_path(pathlib.Path(config)),
-        )
-    else:
-        print("Update Clinet")
-        update_existing_client(
-            # url=None,
-            # path=pathlib.Path(openapi_json),
-            url=url,
-            path=None,
+        errors = create_new_client(
+            url=None,
+            path=pathlib.Path(openapi_json),
+            # url=url,
+            # path=None,
             meta=MetaType.POETRY,
             config=Config.load_from_path(pathlib.Path(config)),
         )
 
-    # openapi_json_path = pathlib.Path(openapi_json)
-    # openapi_json_path.unlink(missing_ok=False)
+    else:
+        print("Update Clinet")
+        errors = update_existing_client(
+            url=None,
+            path=pathlib.Path(openapi_json),
+            # url=url,
+            # path=None,
+            meta=MetaType.POETRY,
+            config=Config.load_from_path(pathlib.Path(config)),
+        )
+
+    for error in errors:
+        print(error.detail)
+
+    openapi_json_path = pathlib.Path(openapi_json)
+    openapi_json_path.unlink(missing_ok=False)
 
 
 if __name__ == "__main__":

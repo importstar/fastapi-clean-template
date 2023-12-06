@@ -6,10 +6,10 @@ import datetime
 
 
 class BaseHouse(BaseSchema):
-    name: str | None = None
-    width: float | None = None
-    height: float | None = None
-    volume: float | None = None
+    name: str
+    width: float
+    height: float
+    volume: float
 
 
 class ResponseHouse(BaseHouse):
