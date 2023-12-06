@@ -6,7 +6,7 @@ from functools import lru_cache
 from loguru import logger
 
 from app.core.logging import InterceptHandler
-from app.core.settings import Settings
+from app.core.config import Settings
 
 
 class AppSettings(Settings):

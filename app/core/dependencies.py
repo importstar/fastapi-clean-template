@@ -2,7 +2,7 @@ from fastapi import Depends
 from jose import jwt
 from pydantic import ValidationError
 
-from app.core.settings import settings
+from app.core.config import settings
 from app.core.exceptions import AuthError
 from app.core.security import ALGORITHM, JWTBearer
 from app.models.user_model import User
