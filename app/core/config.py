@@ -3,12 +3,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
 import os
 
-APP_ENV: str = ""
+ENV: str = os.getenv("APP_ENV", "")
 
 
 class Settings(BaseSettings):
     # base
-    APP_ENV: str = os.getenv("APP_ENV", "dev")
+    APP_ENV: str = ENV
     DEBUG: bool = False
     DOCS_URL: str = "/docs"
     OPENAPI_PREFIX: str = ""
@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     VERSION: str = "0.0.1"
 
     # database
+    DATABASE_MAPPER: dict = {
+        "prod": "fctdb",
+        "stage": "stage-fctdb",
+        "dev": "dev-fctdb",
+        "test": "test-fctdb",
+    }
     DB_ENGINE_MAPPER: dict = {
         "postgresql": "postgresql",
         "mysql": "mysql+pymysql",
@@ -27,7 +33,7 @@ class Settings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: str = "27017"
     DB_USER: str = ""
-    DB_NAME: str = ""
+    DB_NAME: str = DATABASE_MAPPER[APP_ENV]
     DB_PASSWORD: str = ""
     DB_ENGINE: str = DB_ENGINE_MAPPER[DB]
     DATABASE_URI_FORMAT: str = (
@@ -37,20 +43,31 @@ class Settings(BaseSettings):
 
     # auth
     SECRET_KEY: str = "secret_key"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 24 * 60  # 1 day
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = 7 * 24 * 60  # 7 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10  # 10 mins
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 30 * 24 * 60  # 30 days
+    OTP_INTERVAL: int = 30
 
     API_PREFIX: str = "/api"
 
     # CORS
-    ALLOWED_HOSTS: List[str] = ["*"]
+    ALLOW_CREDENTIALS: bool = True
+    ALLOW_HOSTS: List[str] = ["*"]
+    ALLOW_METHODS: List[str] = ["*"]
+    ALLOW_HEADERS: List[str] = ["*"]
+    DISALLOW_AGENTS: List[str] = [
+        "zgrab",
+        "curl",
+        "wget",
+        "postmanruntime",
+        "python-requests",
+    ]
 
     LOGGING_LEVEL: int = logging.INFO
     LOGGERS: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
 
     # find query
-    PAGE: int = 1
-    PAGE_SIZE: int = 20
+    DEFAULT_PAGE_SIZE: int = 50
+    MAX_PAGE_SIZE: int = 100
 
     # date
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
@@ -58,19 +75,12 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         case_sensitive=True,
-        env_file=".env" if "prod" in os.getenv("APP_ENV").lower() else ".env.dev",
+        env_file=".env.dev"
+        if "dev" == ENV
+        else ".env"
+        if "prod" == ENV
+        else ".env.test",
     )
 
 
-class TestConfigs(Settings):
-    APP_ENV: str = "test"
-
-
 settings = Settings()
-
-if APP_ENV == "prod":
-    pass
-elif APP_ENV == "stage":
-    pass
-elif APP_ENV == "test":
-    settings = TestConfigs()
