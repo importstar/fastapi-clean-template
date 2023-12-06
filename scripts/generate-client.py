@@ -42,7 +42,7 @@ def generate_client(
 
     path = pathlib.Path("api-client")
     if not path.exists():
-        print("Generate Clinet")
+        print("Generate Client")
         errors = create_new_client(
             url=None,
             path=pathlib.Path(openapi_json),
@@ -53,7 +53,7 @@ def generate_client(
         )
 
     else:
-        print("Update Clinet")
+        print("Update Client")
         errors = update_existing_client(
             url=None,
             path=pathlib.Path(openapi_json),
