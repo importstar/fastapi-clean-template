@@ -37,18 +37,6 @@ def generate_client(
         if "pages" in properties:
             properties["pages"] = {"type": "integer", "minimum": 0.0}
 
-    data["components"]["schemas"]["Body_authentication_api_v1_auth_login_post"][
-        "properties"
-    ]["grant_type"] = {"type": "string", "pattern": "password"}
-
-    data["components"]["schemas"]["Body_authentication_api_v1_auth_login_post"][
-        "properties"
-    ]["client_id"] = {"type": "string"}
-
-    data["components"]["schemas"]["Body_authentication_api_v1_auth_login_post"][
-        "properties"
-    ]["client_secret"] = {"type": "string"}
-
     with open(openapi_json, "w") as f:
         json.dump(data, f)
 
