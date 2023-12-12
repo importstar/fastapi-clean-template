@@ -1,4 +1,4 @@
-from app.schemas.base_schema import BaseSchema, BaseSchemaInfo
+from app.schemas.base_schema import BaseSchema, BaseSchemaInfo, FindBase
 from pydantic import BaseModel, Field
 from typing import Optional
 from app.utils import AllOptional, PydanticObjectId
@@ -10,6 +10,13 @@ class BaseHouse(BaseSchema):
     width: float
     height: float
     volume: float
+
+
+class FindHouse(FindBase):
+    name: Optional[str] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
+    volume: Optional[float] = None
 
 
 class ResponseHouse(BaseHouse):
