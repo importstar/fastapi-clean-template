@@ -11,16 +11,16 @@ router = APIRouter(tags=["house"], prefix="/house")
 
 @router.get("/", response_model=Page[ResponseHouse])
 async def house(
-    house_service: HouseService = Depends(HouseService),
+    house_service: Annotated[HouseService, Depends(HouseService)],
     find_house: FindHouse = Depends(),
 ):
-    houses = house_service.get_list()
+    houses = house_service.find_house(schema=find_house)
     return paginate(houses)
 
 
 @router.post("/create", response_model=ResponseHouse)
 async def create_house(
-    house: BaseHouse, house_service: HouseService = Depends(HouseService)
+    house: BaseHouse, house_service: Annotated[HouseService, Depends(HouseService)]
 ):
     house = house_service.create(house)
     return house
@@ -28,7 +28,9 @@ async def create_house(
 
 @router.patch("/{house_id}", response_model=ResponseHouse)
 async def update_house(
-    house_id: str, house: BaseHouse, house_service: HouseService = Depends(HouseService)
+    house_id: str,
+    house: BaseHouse,
+    house_service: Annotated[HouseService, Depends(HouseService)],
 ):
     house = house_service.patch(house_id, house)
     return house
@@ -36,7 +38,7 @@ async def update_house(
 
 @router.delete("/{house_id}", response_model=BaseHouse)
 async def delete_house(
-    house_id: str, house_service: HouseService = Depends(HouseService)
+    house_id: str, house_service: Annotated[HouseService, Depends(HouseService)]
 ):
     house = house_service.delete_by_id(house_id)
     return house
