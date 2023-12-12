@@ -19,9 +19,23 @@ class BaseRepository:
     def get_by_options(
         self, schema: BaseModel | None = None, **kwargs: Any
     ) -> QuerySet:
-        items = self.model.objects(
-            **{**(schema.model_dump(exclude_defaults=True) if schema else {}), **kwargs}
-        )
+        if "query" in kwargs:
+            query = kwargs.pop("query")
+            items = self.model.objects(
+                query,
+                **{
+                    **(schema.model_dump(exclude_defaults=True) if schema else {}),
+                    **kwargs,
+                },
+            )
+        else:
+            items = self.model.objects(
+                **{
+                    **(schema.model_dump(exclude_defaults=True) if schema else {}),
+                    **kwargs,
+                }
+            )
+
         if not items:
             raise NotFoundError(detail="not found")
 
