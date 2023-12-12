@@ -14,9 +14,6 @@ class BaseHouse(BaseSchema):
 
 class FindHouse(FindBase):
     name: Optional[str] = None
-    width: Optional[float] = None
-    height: Optional[float] = None
-    volume: Optional[float] = None
 
 
 class ResponseHouse(BaseHouse):
