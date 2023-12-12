@@ -19,23 +19,6 @@ def generate_client(
     openapi_json = "openapi.json"
     res = httpx.get(url)
     data = res.json()
-    data["openapi"] = "3.0.3"
-    # data["components"]["securitySchemes"]["OAuth2PasswordBearer"]["flows"][
-    #     "password"
-    # ].pop("tokenUrl")
-    for component in data["components"]["schemas"]:
-        properties = data["components"]["schemas"][component]["properties"]
-        if "total" in properties:
-            properties["total"] = {"type": "integer", "minimum": 0.0}
-
-        if "page" in properties:
-            properties["page"] = {"type": "integer", "minimum": 1.0}
-
-        if "size" in properties:
-            properties["size"] = {"type": "integer", "minimum": 1.0}
-
-        if "pages" in properties:
-            properties["pages"] = {"type": "integer", "minimum": 0.0}
 
     with open(openapi_json, "w") as f:
         json.dump(data, f)
